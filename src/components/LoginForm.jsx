@@ -22,13 +22,14 @@ const LoginForm = () => {
     const validate = () => {
         const newErrors = {};
 
-        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+        if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Informe um email válido.';
         }
 
-        if (formData.password && formData.password.length < 4) {
-            newErrors.password = "A senha deve ter entre 4 e 60 caracteres.";
+        if (!formData.password || formData.password.length < 6) {
+            newErrors.password = "A senha deve ter pelo menos 6 caracteres.";
         }
+        
         return newErrors;
     };
 
@@ -39,14 +40,14 @@ const LoginForm = () => {
         });
     };
 
-    useEffect(() => {
+    const handleLogin = () => {
         const validationErrors = validate();
         setErrors(validationErrors);
-    }, [formData]);
 
-    const handleLogin = () => {
-        setIsLogged(true);
-        setRedirect(true);
+        if (Object.keys(validationErrors).length === 0) {
+            setIsLogged(true);
+            setRedirect(true);
+        }
     };
 
     if (redirect) {
@@ -59,10 +60,11 @@ const LoginForm = () => {
                 <h1 className="text-white text-2xl mb-4">Entrar</h1>
                 <input
                     type="text"
-                    placeholder="Email ou número de celular"
+                    placeholder="Email"
                     className={`box-border w-full p-4 mb-4 text-sm font-normal text-white bg-[#161616] bg-opacity-70 border border-gray-500 rounded ${errors.email ? 'border-red-500' : ''}`}
                     id='email'
                     name='email'
+                    value={formData.email}
                     onChange={handleChange}
                 />
                 {errors.email && (
@@ -78,6 +80,7 @@ const LoginForm = () => {
                     onChange={handleChange}
                     name="password"
                     id='password'
+                    value={formData.password}
                 />
                 {errors.password && (
                     <p className="flex items-center gap-1.5 text-red-500 text-xs mt-1">
